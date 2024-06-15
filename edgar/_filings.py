@@ -37,6 +37,7 @@ from edgar._rich import df_to_rich_table, repr_rich
 from edgar._xbrl import FilingXbrl
 from edgar._xml import child_text
 from edgar.attachments import FilingHomepage, Attachment, Attachments
+from edgar.headers import FilingDirectory, IndexHeaders
 from edgar.core import (log, display_size, sec_edgar,
                         filter_by_date, filter_by_form, InvalidDateException, IntString, DataPager)
 from edgar.documents import HtmlDocument, get_clean_html
@@ -1148,6 +1149,18 @@ class Filing:
         with path.open("rb") as file:
             return pickle.load(file)
 
+    @property
+    @lru_cache(maxsize=1)
+    def filing_directory(self) -> FilingDirectory:
+        return FilingDirectory.load(self.base_dir)
+
+    @property
+    @lru_cache(maxsize=1)
+    def index_headers(self) -> IndexHeaders:
+        index_headers_url = f"{self.base_dir}/{self.accession_no}-index-headers.html"
+        index_header_text = download_text(index_headers_url)
+        return IndexHeaders.load(index_header_text)
+
     def to_dict(self) -> Dict[str, Union[str, int]]:
         """Return the filing as a Dict string"""
         return {'accession_no': self.accession_no,
@@ -1233,6 +1246,10 @@ class Filing:
     @property
     def text_url(self) -> str:
         return f"{self.base_dir}/{self.accession_no}.txt"
+
+    @property
+    def index_header_url(self) -> str:
+        return f"{self.base_dir}/index-headers.html"
 
     @property
     def base_dir(self) -> str:

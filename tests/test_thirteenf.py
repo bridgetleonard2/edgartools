@@ -154,9 +154,9 @@ def test_thirteenf_with_broken_infotable_xml():
     <directory>
     <name>/Archives/edgar/data</name>
     <item>
-    <name type="text.gif">0001894188-23-000007-index-headers.html</name>
+    <name type="text.gif">0001894188-23-000007-23AndMe.index-headers.html</name>
     <size></size>
-    <href>/Archives/edgar/data/1894188/000189418823000007/0001894188-23-000007-index-headers.html</href>
+    <href>/Archives/edgar/data/1894188/000189418823000007/0001894188-23-000007-23AndMe.index-headers.html</href>
     <last-modified>2023-11-14 09:38:54</last-modified>
     </item>
     :return:
@@ -195,3 +195,10 @@ def test_13FNT_other_included_managers():
     assert thirteenf.primary_form_information.summary_page.other_included_managers_count == 0
     assert thirteenf.primary_form_information.summary_page.total_holdings == 0
     assert thirteenf.primary_form_information.summary_page.total_value == 0
+
+
+def test_thirteenf_put_call():
+    filing = Filing(form='13F-HR/A', filing_date='2024-06-07', company='SG Capital Management LLC', cik=1510099, accession_no='0001172661-24-002551')
+    thirteenf:ThirteenF = ThirteenF(filing)
+    puts = thirteenf.infotable.query("PutCall == 'Put'")
+    assert len(puts) == 3

@@ -73,6 +73,8 @@ def test_apple_financials_to_get_facts():
     assert balance_sheet.get_fact_value('StockholdersEquity') == '50672000000'
     assert balance_sheet.get_fact_value('LiabilitiesAndStockholdersEquity') == '352755000000'
 
+    print(tenk.income_statement)
+
     # Cash Flow
     cash_flow = tenk.cash_flow_statement
     assert '2022-09-24' in cash_flow.periods
@@ -106,9 +108,8 @@ def test_period_facts_drop_mostly_empty_columns():
     financials = tenk.financials
     balance_sheet = financials.balance_sheet
     period_facts = balance_sheet.period_facts
-    #print(balance_sheet)
+    # print(balance_sheet)
     print(period_facts.columns)
-
 
 
 def test_10K_with_empty_facts():
@@ -154,3 +155,26 @@ def test_show_financials_with_multiple_periods():
     assert cash_flow_statement.periods == ['2023-12-31', '2022-12-31', '2021-12-31']
 
     assert balance_sheet.get_fact_value('AssetsCurrent') == '9918133000'
+
+
+def test_get_financials_for_pershing_filing_period_facts_issues():
+    filing = Filing(form='10-K/A', filing_date='2021-05-24', company='Pershing Square Tontine Holdings, Ltd.',
+                    cik=1811882, accession_no='0001193125-21-170978')
+    xbrl:FilingXbrl = filing.xbrl()
+    fiscal_periods = xbrl.get_fiscal_periods()
+    facts_by_periods = xbrl.get_facts_by_periods()
+    #print(facts_by_periods)
+    #facts = xbrl.get_fiscal_period_facts()
+    tenk = filing.obj()
+    financials = tenk.financials
+    print(financials)
+
+
+def test_get_financials_for_filing_with_period_facts_issues():
+    filing = Filing(form='10-K', filing_date='2020-04-14', company='Cosmos Holdings Inc.', cik=1474167,
+           accession_no='0001477932-20-001964')
+    xbrl = filing.xbrl()
+    facts_by_periods = xbrl.get_facts_by_periods()
+    assert facts_by_periods.columns.tolist() == ['2019-12-31', '2018-12-31']
+
+
