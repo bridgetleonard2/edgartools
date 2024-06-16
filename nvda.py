@@ -1,10 +1,11 @@
-from edgar import *
+import edgar as e
 
-set_identity("Bridget Leonard leonardbridget01@gmail.com")
+e.set_identity("Bridget Leonard leonardbridget01@gmail.com")
 
-nvda_10k = Company("NVDA").get_filings(form="10-K").latest(1)
+nvda_10k = e.Company("NVDA").get_filings(form="10-K").latest(1)
 
-# Calling .obj() on filing automatically downloads and parses data files into data object
+# Calling .obj() on filing automatically downloads and parses data files into
+# data object
 tenk = nvda_10k.obj()
 print(tenk)
 
